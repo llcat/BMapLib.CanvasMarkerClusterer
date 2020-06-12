@@ -1,0 +1,28 @@
+{
+  "name": "bmaplib.canvasmarkerclusterer",
+  "version": "1.0.0",
+  "description": "a marker clusterer for baidu map javascript api v3.0 based on canvas",
+  "main": "index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/llcat/BMapLib.CanvasMarkerClusterer.git"
+  },
+  "keywords": [
+    "baidu",
+    "map",
+    "marker",
+    "clusterer"
+  ],
+  "author": "pino.yu",
+  "license": "MIT",
+  "bugs": {
+    "url": "https://github.com/llcat/BMapLib.CanvasMarkerClusterer/issues"
+  },
+  "homepage": "https://github.com/llcat/BMapLib.CanvasMarkerClusterer#readme",
+  "dependencies": {
+    "zrender": "^4.3.1"
+  }
+}
