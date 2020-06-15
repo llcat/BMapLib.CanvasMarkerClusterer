@@ -1,7 +1,7 @@
 # BMapLib.CanvasMarkerClusterer
 a marker cluster for baidu map javascript api v3.0 based on canvas.
 
-#### 想法
+#### Idea
 1. 基于百度地图JS API v3.0提供的[`CanvasLayer`](http://lbsyun.baidu.com/cms/jsapi/reference/jsapi_reference_3_0.html#a3b28)实现。(百度地图官方提供的基于dom实现的MarkerCluster不能应对大量marker的场景, 基本在400~500个marker时就已经有明显的拖拽卡顿的情况, CanvasLayer基本上可以将绘制各种overlay的能力完全开放给我们呢)。
 2. 借助zrender的能力简化绘制流程, 事件绑定等工作, 需要在canvas层中实现marker和label等常见覆盖物组件。
 3. 实现marker的聚合操作。
@@ -12,3 +12,16 @@ a marker cluster for baidu map javascript api v3.0 based on canvas.
 - [ ] 实现MarkerClusterer组件, 完成标记点的聚合实现。
 - [ ] 实现Label的自动避让功能。
 
+#### Dev
+```sh
+yarn install or npm install
+# at china main land, install speed may very slow, you can set registry
+# for temp use
+yarn install --registry=https://registry.npm.taobao.org
+# or
+npm install --registry=https://registry.npm.taobao.org
+# for consistent use
+yarn config set registry https://registry.npm.taobao.org
+# or
+npm config set registry https://registry.npm.taobao.org
+```

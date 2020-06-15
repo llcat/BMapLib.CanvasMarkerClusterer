@@ -4,6 +4,8 @@
   "description": "a marker clusterer for baidu map javascript api v3.0 based on canvas",
   "main": "index.js",
   "scripts": {
+    "dev": "",
+    "build": "webpack",
     "test": "echo \"Error: no test specified\" && exit 1"
   },
   "repository": {
@@ -24,5 +26,15 @@
   "homepage": "https://github.com/llcat/BMapLib.CanvasMarkerClusterer#readme",
   "dependencies": {
     "zrender": "^4.3.1"
+  },
+  "devDependencies": {
+    "@babel/core": "^7.10.2",
+    "@babel/preset-env": "^7.10.2",
+    "babel-loader": "^8.1.0",
+    "eslint": "^7.2.0",
+    "html-webpack-plugin": "^4.3.0",
+    "webpack": "^4.43.0",
+    "webpack-cli": "^3.3.11",
+    "webpack-dev-server": "^3.11.0"
   }
 }
