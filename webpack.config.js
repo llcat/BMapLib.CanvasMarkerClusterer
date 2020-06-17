@@ -1,18 +1,34 @@
 /* eslint-env node */
 const path = require('path');
+const { CleanWebpackPlugin } = require('clean-webpack-plugin');
+const HtmlWebpackPlugin = require('html-webpack-plugin');
 
 module.exports = {
-    mode: 'development',
-    output: {
-        path: path.resolve(__dirname, 'dist')
+    mode: 'none',
+    
+    devServer: {
+        contentBase: path.join(__dirname, 'dist'),
+        port: 9999
     },
 
-    // module: {
-    //     rules: [
-    //         {
-    //             test: /\.js$/,
-    //             loader: "babel-loader"
-    //         }
-    //     ]
-    // }
+    output: {
+        path: path.resolve(__dirname, 'dist'),
+        filename: 'bmaplib.markerclusterer.js'
+    },
+
+    module: {
+        rules: [
+            {
+                test: /\.js$/,
+                loader: "babel-loader"
+            }
+        ]
+    },
+
+    plugins: [
+        new CleanWebpackPlugin(),
+        new HtmlWebpackPlugin({
+            template: 'index.html'
+        })
+    ]
 }
