@@ -1,6 +1,12 @@
 /* eslint-disable */
 import { init } from 'zrender'
-import { createCircleMarker, createDropletMarker } from './components/marker'
+import {
+    createCircleMarker,
+    createLocationMarker,
+    createImageMarker 
+} from './components/marker'
+import { createLabel } from './components/label'
+import { checkBMap } from './utils'
 import points from './assets/points.json'
 
 export default class MarkerClusterer {
@@ -10,9 +16,19 @@ export default class MarkerClusterer {
      * @param {*} map - BMap实例
      * @param {*} options - 配置项
      */
-    constructor(map, options={
-        clusterMinSize: 2,
-    }) {
+    constructor(map, opts) {
+        checkBMap()
+        let defaultOpts = {
+            clusterMinSize: 2, // 最小聚合个数, 小于该值的, 不会显示点聚合图标
+            gridSize: 60, // 点聚合方格的大小
+            maxZoom: 18, // 最大的缩放等级, 超过该等级不进行聚合
+        }
+        opts = opts || {}
+        this.opts = {
+            ...defaultOpts,
+            ...opts
+        }
+        this.markers = [];
         this._map = map;
         this._canvasLayer = new BMap.CanvasLayer({
             update: this.updateLayer.bind(this)
@@ -20,13 +36,12 @@ export default class MarkerClusterer {
         this._map.addOverlay(this._canvasLayer)
     }
 
+    // 更新canvas layer, 这个方法会在地图移动和缩放时自动调用
     updateLayer() {
         const canvas = this._canvasLayer.canvas;
         this._zr = init(canvas);
-        console.log(this._zr, this.markers);
         this.markers.forEach(m => {
-            const pix = this._map.pointToOverlayPixel(m.point)
-            console.log(pix)
+            const pix = this._map.pointToPixel(m.point)
             m.group.position = [pix.x, pix.y]
             this._zr.add(m.group)
         })
@@ -34,11 +49,20 @@ export default class MarkerClusterer {
 
     loadData(data) {
         this._data = data || [];
-        this.markers = this._data.map(d => {
+        this.markers = this._data.slice(0, 1).map(d => {
             const point = new BMap.Point(d.lng, d.lat);
-            let marker = createDropletMarker(point);
+            let label = createLabel(d.code)
+            let marker = createLocationMarker(point, label);
             return marker;
         })
+    }
+
+    addMarkers(markers) {
+        this.markers = markers
+    }
+
+    addMarker(marker) {
+        
     }
 
     getMap() {
@@ -50,7 +74,7 @@ function initMap() {
     if(BMap) {
         const opts = {
             mapType: BMAP_NORMAL_MAP,
-            minZoom: 2,
+            minZoom: 3,
             maxZoom: 22
         }
         const initPoint = new BMap.Point(114.03502935655705, 30.31737538924881)
