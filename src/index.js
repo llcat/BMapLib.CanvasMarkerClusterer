@@ -22,13 +22,17 @@ export default class MarkerClusterer {
             clusterMinSize: 2, // 最小聚合个数, 小于该值的, 不会显示点聚合图标
             gridSize: 60, // 点聚合方格的大小
             maxZoom: 18, // 最大的缩放等级, 超过该等级不进行聚合
+            needAverageCenter: false
         }
         opts = opts || {}
         this.opts = {
             ...defaultOpts,
             ...opts
         }
+        // marker数组
         this.markers = [];
+        // cluster数组
+        this.clusters = [];
         this._map = map;
         this._canvasLayer = new BMap.CanvasLayer({
             update: this.updateLayer.bind(this)
@@ -65,8 +69,17 @@ export default class MarkerClusterer {
         
     }
 
+    // 生成点聚合
+    generateCluster() {
+
+    }
+
     getMap() {
         return this._map;
+    }
+
+    getOpts() {
+        return this.opts;
     }
 }
 
