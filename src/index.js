@@ -1,9 +1,6 @@
-/* eslint-disable */
 import { init } from 'zrender'
 import {
-    createCircleMarker,
     createLocationMarker,
-    createImageMarker 
 } from './components/marker'
 import { createLabel } from './components/label'
 import { checkBMap } from './utils'
@@ -65,13 +62,9 @@ export default class MarkerClusterer {
         this.markers = markers
     }
 
-    addMarker(marker) {
-        
-    }
-
     // 生成点聚合
     generateCluster() {
-
+        
     }
 
     getMap() {

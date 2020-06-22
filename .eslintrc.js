@@ -9,6 +9,10 @@ module.exports = {
         "ecmaVersion": 11,
         "sourceType": "module"
     },
+    "globals": {
+        "BMap": "readonly",
+        "BMAP_NORMAL_MAP": "readonly"
+    },
     "rules": {
     }
 };
