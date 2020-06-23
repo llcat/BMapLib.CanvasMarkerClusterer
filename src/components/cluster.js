@@ -1,7 +1,8 @@
 import {
     Circle,
     Sector,
-    Group
+    Group,
+    color as zcolor,
 } from 'zrender'
 import { getExtendedBounds } from '../utils'
 
@@ -13,11 +14,11 @@ import { getExtendedBounds } from '../utils'
  * }
  */
 export const clusterScaleInfo = [
-    { max: 10, color: '#1976D2', r: 16 },
-    { max: 30, color: '#FBC02D', r: 20 },
-    { max: 50, color: '#E64A19', r: 24 },
-    { max: 100, color: '#D32F2F', r: 28 },
-    { max: Number.MAX_VALUE, color: '#6A1B9A', r: 32 }
+    { max: 10, color: '#1976D2', r: 14 },
+    { max: 30, color: '#FBC02D', r: 16 },
+    { max: 50, color: '#E64A19', r: 18 },
+    { max: 100, color: '#D32F2F', r: 20 },
+    { max: Number.MAX_VALUE, color: '#6A1B9A', r: 22 }
 ]
 
 export function getClusterScaleBySize(scales, size=0) {
@@ -36,11 +37,15 @@ export function createClusterTextIcon(opts) {
     const size = opts.size;
     const scales = opts.scales || clusterScaleInfo;
     const scaleInfo = getClusterScaleBySize(scales, size)
-    const circleR = scaleInfo.r;
+    const circleR = scaleInfo.r || 20;
+    const iconColor = scaleInfo.color || '#1976D2';
     const textIcon = new Group();
     const circle = new Circle({
         style: {
-            fill: scaleInfo.color || '#1976D2'
+            text: opts.size,
+            fill: iconColor,
+            fontSize: 14,
+            fontWeight: 600
         },
         shape: {
             cx: 0,
@@ -48,13 +53,11 @@ export function createClusterTextIcon(opts) {
             r: circleR
         }
     });
-    
-    const sector = new Sector({
-        shape: {
-
-        }
+    textIcon.add(circle);
+    const sectorList = genSectorList(circleR, iconColor);
+    sectorList.forEach((s) => {
+        textIcon.add(s)
     })
-    textIcon.add()
     return textIcon
 }
 
@@ -64,13 +67,35 @@ export function genSectorList(r, color) {
         [Math.PI*(5/12), Math.PI*(11/12)],
         [Math.PI*(13/12), Math.PI*(19/12)]
     ];
-    let r = [];
-    let deltaR = 3;
-    let gutter = 2;
+    let sectors = [];
+    const deltaR = 4;
+    const gutter = 1;
     for(let i=0; i<angleList.length; i++) {
-        
+        let angle = angleList[i]
+        let tempR = r;
+        let tempColor = color;
+        for (let j=0; j<3; j++) {
+            const r0 = tempR + gutter;
+            const r1 = r0 + deltaR;
+            tempColor = zcolor.modifyAlpha(tempColor, (1-j*0.2));
+            const sector = new Sector({
+                style: {
+                    fill: tempColor
+                },
+                shape: {
+                    cx: 0,
+                    cy: 0,
+                    r0: r0,
+                    r: r1,
+                    startAngle: angle[0],
+                    endAngle: angle[1]
+                }
+            })
+            sectors.push(sector);
+            tempR = r1;
+        }
     }
-    return r;
+    return sectors;
 }
 
 export default class Cluster {
@@ -88,6 +113,7 @@ export default class Cluster {
         this.centerPoint = null;
         // 基于gridSize建立的bounds, 用来聚合该范围内的marker
         this.gridBounds= null;
+
     }
 
     addMarker(marker) {
@@ -98,6 +124,7 @@ export default class Cluster {
         this.setCenterPoint(marker);
         // 更新网格范围
         this.updateGridBounds();
+        marker.markInCluster();
     }
 
     setCenterPoint(marker) {
@@ -140,5 +167,20 @@ export default class Cluster {
     // 返回聚合的中心点坐标
     getCenterPoint() {
         return this.centerPoint;
+    }
+
+    needCluster() {
+        return this.ownMarkers.length > this._clusterMinSize;
+    }
+
+    /**
+     * 网格范围内是否包含有marker坐标点
+     * @param {BMap.Point} point 
+     */
+    gridBoundsContainMarkerPoint(point) {
+        if (this.gridBounds) {
+            return this.gridBounds.containsPoint(point)
+        }
+        return false;
     }
 }

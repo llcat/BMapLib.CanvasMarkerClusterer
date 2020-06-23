@@ -13,11 +13,11 @@ export default class Label {
 export function createLabel(content, opts) {
     content = content || "";
     opts = opts || {
-        position: [0, -22],
         style: {
             text: content,
-            fontSize: '14px',
-            textFill: 'rgb(0, 158, 251)',
+            fontSize: 14,
+            fontWeight: 500,
+            textFill: '#039BE5',
             textBackgroundColor: 'rgba(255, 255, 255, 0.75)',
             textBorderRadius: 2,
             textPadding: 4

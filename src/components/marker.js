@@ -17,6 +17,7 @@ export default class Marker {
     constructor(point, label, opts) {
         this.point = point;
         this.label = label;
+        this.inCluster = false;
         let { elements } = opts;
         this.elements = elements || [];
         this.group = new Group();
@@ -24,6 +25,14 @@ export default class Marker {
             this.group.add(element)
         })
         this.group.add(this.label.text)
+    }
+
+    markInCluster() {
+        this.inCluster = true;
+    }
+
+    unMarkInCluster() {
+        this.inCluster = false;
     }
 }
 

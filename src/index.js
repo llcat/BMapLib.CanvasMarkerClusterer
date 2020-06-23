@@ -2,6 +2,9 @@ import { init } from 'zrender'
 import {
     createLocationMarker,
 } from './components/marker'
+import {
+    createClusterTextIcon
+} from './components/cluster'
 import { createLabel } from './components/label'
 import { checkBMap } from './utils'
 import points from './assets/points.json'
@@ -48,23 +51,34 @@ export default class MarkerClusterer {
         })
     }
 
-    loadData(data) {
-        this._data = data || [];
-        this.markers = this._data.slice(0, 1).map(d => {
-            const point = new BMap.Point(d.lng, d.lat);
-            let label = createLabel(d.code)
-            let marker = createLocationMarker(point, label);
-            return marker;
+    holdMarkers(markers) {
+        markers.forEach(m => {
+            this.holdMarker(m)
         })
     }
 
-    addMarkers(markers) {
-        this.markers = markers
+    holdMarker(marker) {
+        const isHolded = this.markers.indexOf(marker) !== -1;
+        if (!isHolded) {
+            this.markers.push(marker)
+        }
+    }
+
+    clearClusters() {
+        this.clusters = [];
+        this.markers.forEach(m => {
+            m.unMarkInCluster()
+        })
     }
 
     // 生成点聚合
-    generateCluster() {
-        
+    generateClusters() {
+
+    }
+
+    _update() {
+        this.clearClusters()
+        this.generateCluster() 
     }
 
     getMap() {
@@ -89,11 +103,14 @@ function initMap() {
         map.enableScrollWheelZoom()
 
         const clusterer = new MarkerClusterer(map)
-        clusterer.loadData(points)
-        // const p1 = points[0]
-        // let r = map.pointToOverlayPixel(new BMap.Point(p1.lng, p1.lat))
-        // let r1 = map.pointToPixel(new BMap.Point(p1.lng, p1.lat))
-        // console.log(r, r1)
+
+        let markers = points.map(p => {
+            const point = new BMap.Point(p.lng, p.lat);
+            let label = createLabel(p.code+'aaaaaaaaaaa');
+            let marker = createLocationMarker(point, label);
+            return marker;
+        });
+        clusterer.addMarkers(markers)
     }
 }
 
