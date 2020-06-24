@@ -1,6 +1,7 @@
 import {
     Circle,
     Droplet,
+    Rect,
     Image,
     Group
 } from 'zrender'
@@ -18,13 +19,39 @@ export default class Marker {
         this.point = point;
         this.label = label;
         this.inCluster = false;
-        let { elements } = opts;
+        let { elements, showLabelByHover } = opts;
         this.elements = elements || [];
+        this.showLabelByHover = showLabelByHover;
         this.group = new Group();
+        this.elementsGroup = new Group();
         this.elements.forEach(element => {
-            this.group.add(element)
-        })
-        this.group.add(this.label.text)
+            this.elementsGroup.add(element)
+        });
+        this.group.add(this.elementsGroup);
+        this.group.add(this.label.text);
+        this._bindMouseEventHandler();
+        this._resetLabelPosition();
+    }
+
+    _bindMouseEventHandler() {
+        if (this.showLabelByHover) {
+            this.label.text.hide();
+            this.group.on('mouseover', () => {
+                this.label.text.show();
+            });
+            this.group.on('mouseout', () => {
+                this.label.text.hide()
+            })
+        }
+    }
+
+    // 重置
+    _resetLabelPosition() {
+        const labelRect = this.label.text.getBoundingRect();
+        const elementsRect = this.elementsGroup.getBoundingRect();
+        const positionX = -(labelRect.width / 2);
+        const positionY = -(elementsRect.height/2 + labelRect.height);
+        this.label.text.attr('position', [positionX, positionY])
     }
 
     markInCluster() {
@@ -62,8 +89,8 @@ export function createLocationMarker(point, label, opts) {
         shape: {
             cx: 0,
             cy: 0,
-            width: 6,
-            height: 8
+            width: 8,
+            height: 10
         },
         rotation: Math.PI
     }
@@ -81,7 +108,8 @@ export function createLocationMarker(point, label, opts) {
     const droplet = new Droplet(dropletOpts)
     const circle = new Circle(circleOpts)
     return new Marker(point, label, {
-        elements: [droplet, circle]
+        elements: [droplet, circle],
+        showLabelByHover: false
     })
 }
 

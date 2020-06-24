@@ -20,8 +20,9 @@ export function createLabel(content, opts) {
             textFill: '#039BE5',
             textBackgroundColor: 'rgba(255, 255, 255, 0.75)',
             textBorderRadius: 2,
-            textPadding: 4
-        }
+            textPadding: 4,
+        },
+        z: 1
     }
     return new Label(content, opts)
 }

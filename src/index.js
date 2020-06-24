@@ -76,6 +76,14 @@ export default class MarkerClusterer {
 
     }
 
+    _addToClosestCluster() {
+
+    }
+
+    _findClosestCluster() {
+
+    }
+
     _update() {
         this.clearClusters()
         this.generateCluster() 
@@ -106,11 +114,11 @@ function initMap() {
 
         let markers = points.map(p => {
             const point = new BMap.Point(p.lng, p.lat);
-            let label = createLabel(p.code+'aaaaaaaaaaa');
+            let label = createLabel(p.code);
             let marker = createLocationMarker(point, label);
             return marker;
         });
-        clusterer.addMarkers(markers)
+        clusterer.holdMarkers(markers)
     }
 }
 
