@@ -7,6 +7,12 @@ import {
 import { getExtendedBounds } from '../utils'
 
 /**
+ * @typedef {object} BMap.Point
+ * @property {number} lng
+ * @property {number} lat
+ */
+
+/**
  * less equal scale's max value
  * {
  *      color: '‘ // 聚类图标颜色, 支持zrender提供的颜色方案, hex, rgba, hsl, css color
@@ -32,7 +38,13 @@ export function getClusterScaleBySize(scales, size=0) {
     }
 }
 
-// 生成默认的聚类TextIcon, 仿百度点聚合图标形状
+/**
+ * 生成默认的聚类TextIcon, 仿百度点聚合图标形状
+ * @param {Object} opts
+ * @param {Array} opts.scales - 色阶数组, 不提供使用默认的色阶
+ * @param {Number} opts.size - 对应的色阶值, 小于某个色阶的max值
+ * @return {Group}
+ */
 export function createClusterTextIcon(opts) {
     const size = opts.size;
     const scales = opts.scales || clusterScaleInfo;
@@ -53,6 +65,7 @@ export function createClusterTextIcon(opts) {
             r: circleR
         }
     });
+    circle.name = 'pp'
     textIcon.add(circle);
     const sectorList = genSectorList(circleR, iconColor);
     sectorList.forEach((s) => {
@@ -106,19 +119,40 @@ export default class Cluster {
         const opts = manager.getOpts();
         // 该聚合的网格尺寸
         this._gridSize = opts.gridSize;
+        // 能显示聚合图标的最小marker数量
         this._clusterMinSize = opts.clusterMinSize;
         this._needAverageCenter = opts.needAverageCenter;
+        this._maxZoom = opts.maxZoom
         // 该聚合持有的marker数组
         this.ownMarkers = [];
         this.centerPoint = null;
         // 基于gridSize建立的bounds, 用来聚合该范围内的marker
         this.gridBounds= null;
+    }
 
+    getRenderElement() {
+        if (this.needRenderCluster()) {
+            // 需要渲染cluster
+            const textIcon = createClusterTextIcon({
+                size: this.ownMarkers.length
+            })
+            return {
+                type: 'cluster',
+                textIcon: textIcon
+            }
+        } else {
+            return {
+                type: 'markers',
+                markers: this.ownMarkers
+            }
+        }
     }
 
     addMarker(marker) {
         if (this.contain(marker)){
             return;
+        } else {
+            this.ownMarkers.push(marker)
         }
         // 设定中心点
         this.setCenterPoint(marker);
@@ -140,6 +174,9 @@ export default class Cluster {
         }
     }
 
+    /**
+     * 网格范围可能随着中心点变化而变化, 网格的大小是不变的
+     */
     updateGridBounds() {
         const bounds = new BMap.Bounds(this.centerPoint, this.centerPoint);
         this.gridBounds = getExtendedBounds(this._map, bounds, this._gridSize);
@@ -169,12 +206,14 @@ export default class Cluster {
         return this.centerPoint;
     }
 
-    needCluster() {
-        return this.ownMarkers.length > this._clusterMinSize;
+    needRenderCluster() {
+        const validSize =  this.ownMarkers.length > this._clusterMinSize;
+        const validMaxZoom = this._map.getZoom() <= this._maxZoom
+        return validSize && validMaxZoom;
     }
 
     /**
-     * 网格范围内是否包含有marker坐标点
+     * 网格范围内是否包含有某个marker坐标点
      * @param {BMap.Point} point 
      */
     gridBoundsContainMarkerPoint(point) {

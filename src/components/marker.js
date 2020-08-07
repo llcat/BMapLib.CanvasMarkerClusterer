@@ -1,7 +1,6 @@
 import {
     Circle,
     Droplet,
-    Rect,
     Image,
     Group
 } from 'zrender'
@@ -10,7 +9,6 @@ import flag from '../assets/flag.png'
 
 export default class Marker {
     /**
-     * 
      * @param {BMap.Point} point 
      * @param {*} label 
      * @param {*} opts 
@@ -61,6 +59,14 @@ export default class Marker {
     unMarkInCluster() {
         this.inCluster = false;
     }
+
+    /**
+     * 返回百度经纬度坐标
+     * @return {BMap.Point}
+     */
+    getPoint() {
+        return this.point
+    }
 }
 
 export function createCircleMarker(point, label, opts={
@@ -78,6 +84,7 @@ export function createCircleMarker(point, label, opts={
         elements: [circle]
     });
 }
+
 
 export function createLocationMarker(point, label, opts) {
     opts = opts || {}

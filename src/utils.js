@@ -32,5 +32,5 @@ export function getExtendedBounds(map, originBounds, gridSize) {
     const newPixelSW = new BMap.Pixel(originPixelSW.x - gridSize, originPixelSW.y + gridSize);
     const newPointNE = map.pixelToPoint(newPixelNE);
     const newPointSW = map.pixelToPoint(newPixelSW);
-    return new BMap.Bounds(newPixelSW, newPixelNE);
+    return new BMap.Bounds(newPointSW, newPointNE);
 }
